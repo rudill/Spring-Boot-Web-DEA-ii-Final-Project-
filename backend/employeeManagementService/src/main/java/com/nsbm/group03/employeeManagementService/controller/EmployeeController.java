@@ -39,7 +39,7 @@ public class EmployeeController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getEmployeeById(@PathVariable Long id) {
         return employeeService.getEmployeeById(id)
-                .map(employee -> new ResponseEntity<>(employee, HttpStatus.OK))
+                .<ResponseEntity<?>>map(employee -> new ResponseEntity<>(employee, HttpStatus.OK))
                 .orElse(new ResponseEntity<>("Employee not found with id: " + id, HttpStatus.NOT_FOUND));
     }
     
@@ -47,7 +47,7 @@ public class EmployeeController {
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getEmployeeByEmail(@PathVariable String email) {
         return employeeService.getEmployeeByEmail(email)
-                .map(employee -> new ResponseEntity<>(employee, HttpStatus.OK))
+                .<ResponseEntity<?>>map(employee -> new ResponseEntity<>(employee, HttpStatus.OK))
                 .orElse(new ResponseEntity<>("Employee not found with email: " + email, HttpStatus.NOT_FOUND));
     }
     
