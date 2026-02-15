@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  inventory-db:
+    image: postgres:15-alpine
+    container_name: inventory-db
+    environment:
+      - POSTGRES_DB=inventory_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - inventory_db_data:/var/lib/postgresql/data
+    networks:
+      - inventory-network
+
+  inventory-service:
+    build: .
+    container_name: inventory-service
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://inventory-db:5432/inventory_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - inventory-db
+    networks:
+      - inventory-network
+
+volumes:
+  inventory_db_data:
+
+networks:
+  inventory-network:
+    driver: bridge
