@@ -27,7 +27,7 @@ public class InventoryService {
     }
 
     public InventoryItemDTO updateStock(Long id, int amountUsed) {
-        InventoryItem item = inventoryRepository.findById(id).orElseThrow();
+        InventoryItem item = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Item not found"));
         int newQuantity = item.getQuantity() - amountUsed;
         if (newQuantity < 0) {
             throw new RuntimeException("Not enough stock");
@@ -35,6 +35,59 @@ public class InventoryService {
         item.setQuantity(newQuantity);
         InventoryItem updatedItem = inventoryRepository.save(item);
         return mapToDTO(updatedItem);
+    }
+
+    public InventoryItemDTO getItemById(Long id) {
+        InventoryItem item = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Item not found"));
+        return mapToDTO(item);
+    }
+
+    public InventoryItemDTO updateItem(Long id, InventoryItemDTO itemDetail) {
+        InventoryItem item = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Item not found"));
+        item.setName(itemDetail.getName());
+        item.setCategory(itemDetail.getCategory());
+        item.setQuantity(itemDetail.getQuantity());
+        item.setLowStock(itemDetail.getLowStock());
+        InventoryItem updatedItem = inventoryRepository.save(item);
+        return mapToDTO(updatedItem);
+    }
+
+    public void deleteItem(Long id) {
+        InventoryItem item = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Item not found"));
+        inventoryRepository.delete(item);
+    }
+
+    public InventoryItemDTO restockItem(Long id, int amount) {
+        InventoryItem item = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Item not found"));
+        if (amount <= 0) {
+            throw new RuntimeException("Restock amount must be greater than zero");
+        }
+        item.setQuantity(item.getQuantity() + amount);
+        InventoryItem updatedItem = inventoryRepository.save(item);
+        return mapToDTO(updatedItem);
+    }
+
+    public List<InventoryItemDTO> getLowStockItems() {
+        return inventoryRepository.findItemsAtOrBelowLowStock().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<InventoryItemDTO> searchItems(String keyword) {
+        List<InventoryItem> itemsByName = inventoryRepository.findByNameContainingIgnoreCase(keyword);
+        List<InventoryItem> itemsByCategory = inventoryRepository.findByCategoryContainingIgnoreCase(keyword);
+
+        // Merge and remove duplicates if any item matches both name and category
+        List<InventoryItem> combinedItems = itemsByName;
+        for (InventoryItem item : itemsByCategory) {
+            if (!combinedItems.contains(item)) {
+                combinedItems.add(item);
+            }
+        }
+
+        return combinedItems.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     private InventoryItemDTO mapToDTO(InventoryItem item) {

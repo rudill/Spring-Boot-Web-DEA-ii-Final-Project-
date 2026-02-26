@@ -28,4 +28,34 @@ class InventoryController {
         return inventoryService.updateStock(id, amountUsed);
     }
 
+    @GetMapping("/{id}")
+    public InventoryItemDTO getItemById(@PathVariable Long id) {
+        return inventoryService.getItemById(id);
+    }
+
+    @PutMapping("/{id}")
+    public InventoryItemDTO updateItem(@PathVariable Long id, @RequestBody InventoryItemDTO item) {
+        return inventoryService.updateItem(id, item);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteItem(@PathVariable Long id) {
+        inventoryService.deleteItem(id);
+    }
+
+    @PutMapping("/{id}/restock")
+    public InventoryItemDTO restockItem(@PathVariable Long id, @RequestParam int amount) {
+        return inventoryService.restockItem(id, amount);
+    }
+
+    @GetMapping("/low-stock")
+    public List<InventoryItemDTO> getLowStockItems() {
+        return inventoryService.getLowStockItems();
+    }
+
+    @GetMapping("/search")
+    public List<InventoryItemDTO> searchItems(@RequestParam String keyword) {
+        return inventoryService.searchItems(keyword);
+    }
+
 }
