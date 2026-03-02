@@ -8,7 +8,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="kitchenManagementService" />
-        <module name="inventoryManagementService" />
         <module name="roomManagementService" />
       </profile>
       <profile name="Annotation profile for reservationManagementService" enabled="true">
@@ -19,6 +18,15 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
         <module name="reservationManagementService" />
+      </profile>
+      <profile name="Annotation profile for inventoryManagementService" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="inventoryManagementService" />
       </profile>
     </annotationProcessing>
   </component>
