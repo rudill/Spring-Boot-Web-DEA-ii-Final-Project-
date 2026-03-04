@@ -138,4 +138,23 @@ class InventoryService {
       throw Exception('Failed to search items: ${e.message}');
     }
   }
+
+  Future<InventoryItem> consumeItem(int id, int amount) async {
+    try {
+      final response = await _dio.put(
+        '$_baseUrl$_inventoryEndpoint/$id/consume',
+        queryParameters: {'amountUsed': amount},
+      );
+      if (response.statusCode == 200) {
+        return InventoryItem.fromJson(response.data);
+      } else {
+        throw Exception('Failed to consume item: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.statusCode == 400) {
+        throw Exception(e.response?.data?['message'] ?? 'Not enough stock');
+      }
+      throw Exception('Failed to consume item: ${e.message}');
+    }
+  }
 }

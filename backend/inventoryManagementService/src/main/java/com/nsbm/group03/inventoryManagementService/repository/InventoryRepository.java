@@ -12,6 +12,6 @@ public interface InventoryRepository extends JpaRepository<InventoryItem, Long> 
 
     List<InventoryItem> findByCategoryContainingIgnoreCase(String category);
 
-    @Query("SELECT i FROM InventoryItem i WHERE i.quantity <= i.lowStock")
+    @Query("SELECT i FROM InventoryItem i WHERE i.quantity <= CASE WHEN i.lowStock > 0 THEN i.lowStock ELSE 10 END")
     List<InventoryItem> findItemsAtOrBelowLowStock();
 }

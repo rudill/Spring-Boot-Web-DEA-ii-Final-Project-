@@ -30,7 +30,10 @@ public class InventoryService {
         InventoryItem item = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Item not found"));
         int newQuantity = item.getQuantity() - amountUsed;
         if (newQuantity < 0) {
-            throw new RuntimeException("Not enough stock");
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "Cannot consume more than available stock. Available stock: " + item.getQuantity() + ", Requested: "
+                            + amountUsed);
         }
         item.setQuantity(newQuantity);
         InventoryItem updatedItem = inventoryRepository.save(item);

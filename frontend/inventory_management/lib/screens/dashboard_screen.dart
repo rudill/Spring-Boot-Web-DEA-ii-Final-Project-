@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/inventory_item.dart';
 import '../services/inventory_service.dart';
+import 'reports_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -26,6 +27,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late Future<List<InventoryItem>> _inventoryFuture;
   final TextEditingController _searchController = TextEditingController();
 
+  int _totalItemsCount = 0;
+  int _lowStockCount = 0;
+  int _selectedIndex = 1; // 1 = Inventory, 4 = Reports
+  List<InventoryItem> _items = [];
+
   @override
   void initState() {
     super.initState();
@@ -33,9 +39,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _fetchData() {
+    final future = _inventoryService.fetchInventory();
     setState(() {
-      _inventoryFuture = _inventoryService.fetchInventory();
+      _inventoryFuture = future;
     });
+
+    future
+        .then((items) {
+          if (mounted) {
+            setState(() {
+              _items = items;
+              _totalItemsCount = items.length;
+              _lowStockCount = items.where((item) => item.isLowStock).length;
+            });
+          }
+        })
+        .catchError((_) {
+          // Handle or ignore gracefully in the future builder
+        });
   }
 
   @override
@@ -46,26 +67,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           _buildSidebar(),
           Expanded(
-            child: Column(
-              children: [
-                _buildHeader(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Column(
-                      children: [
-                        _buildStatsGrid(),
-                        const SizedBox(height: 32),
-                        _buildInventoryDataBox(),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: _selectedIndex == 4
+                ? ReportsScreen(items: _items)
+                : _buildInventoryContent(),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildInventoryContent() {
+    return Column(
+      children: [
+        _buildHeader(),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              children: [
+                _buildStatsGrid(),
+                const SizedBox(height: 32),
+                _buildInventoryDataBox(),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -140,20 +167,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                 ),
-                _buildNavItem(Icons.dashboard_outlined, "Dashboard", false),
-                _buildNavItem(Icons.inventory_2, "Inventory", true),
+                _buildNavItem(Icons.dashboard_outlined, "Dashboard", 0),
+                _buildNavItem(Icons.inventory_2, "Inventory", 1),
                 _buildNavItemWithBadge(
                   Icons.shopping_cart_outlined,
                   "Orders",
-                  false,
+                  2,
                   "3",
                 ),
-                _buildNavItem(
-                  Icons.local_shipping_outlined,
-                  "Suppliers",
-                  false,
-                ),
-                _buildNavItem(Icons.bar_chart_outlined, "Reports", false),
+                _buildNavItem(Icons.local_shipping_outlined, "Suppliers", 3),
+                _buildNavItem(Icons.bar_chart_outlined, "Reports", 4),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Divider(color: AppColors.border),
@@ -170,8 +193,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                 ),
-                _buildNavItem(Icons.settings_outlined, "Settings", false),
-                _buildNavItem(Icons.help_outline, "Help Center", false),
+                _buildNavItem(Icons.settings_outlined, "Settings", 5),
+                _buildNavItem(Icons.help_outline, "Help Center", 6),
               ],
             ),
           ),
@@ -220,7 +243,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String title, bool isActive) {
+  Widget _buildNavItem(IconData icon, String title, int index) {
+    bool isActive = _selectedIndex == index;
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
@@ -244,7 +268,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        onTap: () {},
+        onTap: () {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         hoverColor: AppColors.slate50,
       ),
     );
@@ -253,9 +281,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildNavItemWithBadge(
     IconData icon,
     String title,
-    bool isActive,
+    int index,
     String badgeCount,
   ) {
+    bool isActive = _selectedIndex == index;
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
@@ -294,7 +323,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        onTap: () {},
+        onTap: () {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         hoverColor: AppColors.slate50,
       ),
     );
@@ -451,7 +484,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Expanded(
           child: _buildStatCard(
             "Total Items",
-            "1,245",
+            _totalItemsCount.toString(),
             Icons.inventory_2,
             Colors.blue,
             "12%",
@@ -463,7 +496,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Expanded(
           child: _buildStatCard(
             "Low Stock Alert",
-            "15",
+            _lowStockCount.toString(),
             Icons.warning_amber_rounded,
             Colors.orange,
             "+3 new",
@@ -472,29 +505,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         const SizedBox(width: 24),
-        Expanded(
-          child: _buildStatCard(
-            "Pending Orders",
-            "8",
-            Icons.pending_actions,
-            Colors.purple,
-            "-2",
-            Icons.trending_down,
-            false,
-          ),
-        ),
-        const SizedBox(width: 24),
-        Expanded(
-          child: _buildStatCard(
-            "Total Value",
-            "\$45,200",
-            Icons.payments_outlined,
-            Colors.green,
-            "5%",
-            Icons.trending_up,
-            true,
-          ),
-        ),
+        // Expanded(
+        //   child: _buildStatCard(
+        //     "Pending Orders",
+        //     "8",
+        //     Icons.pending_actions,
+        //     Colors.purple,
+        //     "-2",
+        //     Icons.trending_down,
+        //     false,
+        //   ),
+        // ),
+        // const SizedBox(width: 24),
+        // Expanded(
+        //   child: _buildStatCard(
+        //     "Total Value",
+        //     "\$45,200",
+        //     Icons.payments_outlined,
+        //     Colors.green,
+        //     "5%",
+        //     Icons.trending_up,
+        //     true,
+        //   ),
+        // ),
       ],
     );
   }
@@ -987,6 +1020,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   padding: const EdgeInsets.all(4),
                                   constraints: const BoxConstraints(),
                                   icon: const Icon(
+                                    Icons.remove_shopping_cart_outlined,
+                                    size: 18,
+                                    color: Colors.orange,
+                                  ),
+                                  tooltip: 'Consume',
+                                  hoverColor: Colors.orange.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  onPressed: () => _showConsumeDialog(item),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: AppColors.border),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: IconButton(
+                                  padding: const EdgeInsets.all(4),
+                                  constraints: const BoxConstraints(),
+                                  icon: const Icon(
                                     Icons.edit_outlined,
                                     size: 18,
                                     color: AppColors.primary,
@@ -1184,6 +1238,63 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  void _showConsumeDialog(InventoryItem item) {
+    final TextEditingController amountController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Consume ${item.name}'),
+          content: TextField(
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Consume Amount',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final amount = int.tryParse(amountController.text) ?? 0;
+                if (amount > 0) {
+                  Navigator.pop(context);
+                  try {
+                    await _inventoryService.consumeItem(item.id, amount);
+                    _fetchData();
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Item consumed successfully'),
+                      ),
+                    );
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          e.toString().replaceAll('Exception: ', ''),
+                        ),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 4),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text('Consume'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showAddEditItemDialog({InventoryItem? item}) {
     final isEditing = item != null;
     final nameController = TextEditingController(text: item?.name ?? '');
@@ -1193,8 +1304,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final quantityController = TextEditingController(
       text: item?.quantity.toString() ?? '',
     );
-    // Using 10 as default low stock threshold
-    final lowStockController = TextEditingController(text: '10');
+    // Using 10 as default low stock threshold for new items
+    final lowStockController = TextEditingController(
+      text: item?.lowStock.toString() ?? '10',
+    );
 
     showDialog(
       context: context,

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Inventory Performance Reports View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e3fae",
+                        "secondary": "#10b981",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121520",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .card { @apply bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex min-h-screen">
+<!-- Sidebar -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900 shrink-0">
+<div class="p-6 flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">hotel</span>
+</div>
+<div>
+<h1 class="text-lg font-bold leading-none">StayManager</h1>
+<p class="text-xs text-slate-500 mt-1">Inventory System</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-sm font-medium">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-sm font-medium">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="text-sm font-medium">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="User profile avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKJsIPVh34ZQUyPWqJM9pamfhNpGCItDJ6JhaHyYL460T1FAR5AXcV_rrQukU272IT2eZ0NC0tJKtQqT1FAvBtpzyVZtRtH1quyUUArZXy107l0tp3lrS_KubRnZhKfE9lvjqQInscrFc8QKYXAwyvvXGbw1IeKgZO3W-kgxIPjudRvzw_mzRG_C4T4mbK4lZScyWpPgjt92pg-Tl86tTYi8Nj_PtzUwMiuABbt8QfFaMevr39OaGkRIHOugXRPmUbepJLCaWYtX4T"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-semibold truncate">Alex Johnson</p>
+<p class="text-[10px] text-slate-500 truncate">Admin Manager</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto">
+<!-- Header -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
+<h2 class="text-xl font-bold tracking-tight">Inventory Performance Reports</h2>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary/20" placeholder="Search reports..." type="text"/>
+</div>
+<button class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-lg">download_for_offline</span>
+                        Generate Report
+                    </button>
+<button class="size-10 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<div class="p-8 max-w-7xl mx-auto space-y-6">
+<!-- Stats Summary Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="card p-6">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Monthly Usage</p>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-2xl font-bold tracking-tight">$12,450</span>
+<span class="text-xs font-bold text-secondary flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> 5.2%
+                            </span>
+</div>
+<p class="text-[10px] text-slate-400 mt-1">Compared to $11,834 last month</p>
+</div>
+<div class="card p-6">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Inventory Turnover</p>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-2xl font-bold tracking-tight">4.2x</span>
+<span class="text-xs font-bold text-red-500 flex items-center">
+<span class="material-symbols-outlined text-xs">trending_down</span> 0.8%
+                            </span>
+</div>
+<p class="text-[10px] text-slate-400 mt-1">Industry average: 3.8x</p>
+</div>
+<div class="card p-6">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Stock Value</p>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-2xl font-bold tracking-tight">$85,200</span>
+<span class="text-xs font-bold text-secondary flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> 2.1%
+                            </span>
+</div>
+<p class="text-[10px] text-slate-400 mt-1">Current asset valuation</p>
+</div>
+<div class="card p-6">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Out of Stock Items</p>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-2xl font-bold tracking-tight">12</span>
+<span class="text-xs font-bold text-secondary flex items-center">
+<span class="material-symbols-outlined text-xs">trending_down</span> 15%
+                            </span>
+</div>
+<p class="text-[10px] text-slate-400 mt-1">Critical alerts: 4</p>
+</div>
+</div>
+<!-- Main Visualization Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Bar Chart: Usage by Category -->
+<div class="card p-6 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="font-bold text-lg">Usage by Category</h3>
+<p class="text-sm text-slate-500">Distribution of consumption ($)</p>
+</div>
+<div class="flex gap-1 bg-slate-100 dark:bg-slate-700 p-1 rounded-lg">
+<button class="px-3 py-1 text-xs font-bold bg-white dark:bg-slate-800 shadow-sm rounded-md">30D</button>
+<button class="px-3 py-1 text-xs font-bold text-slate-500">90D</button>
+</div>
+</div>
+<div class="flex-1 flex items-end justify-between gap-4 h-64 px-4 pb-8 border-b border-slate-100 dark:border-slate-700">
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/20 rounded-t-lg transition-all hover:bg-primary" style="height: 65%;"></div>
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Linens</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/20 rounded-t-lg transition-all hover:bg-primary" style="height: 90%;"></div>
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Toiletries</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/20 rounded-t-lg transition-all hover:bg-primary" style="height: 40%;"></div>
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Food</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/20 rounded-t-lg transition-all hover:bg-primary" style="height: 80%;"></div>
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Drinks</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/20 rounded-t-lg transition-all hover:bg-primary" style="height: 55%;"></div>
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Cleaning</span>
+</div>
+</div>
+</div>
+<!-- Line Chart: Stock Levels -->
+<div class="card p-6 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="font-bold text-lg">Stock Levels Over Time</h3>
+<p class="text-sm text-slate-500">Inventory volume (Units)</p>
+</div>
+<select class="text-xs font-bold bg-slate-100 dark:bg-slate-700 border-none rounded-lg focus:ring-0 cursor-pointer">
+<option>Last 6 Months</option>
+<option>Last Year</option>
+</select>
+</div>
+<div class="flex-1 relative h-64">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 150">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#1e3fae" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#1e3fae" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,120 Q50,110 80,60 T160,80 T240,40 T320,100 T400,20 L400,150 L0,150 Z" fill="url(#chartGradient)"></path>
+<path d="M0,120 Q50,110 80,60 T160,80 T240,40 T320,100 T400,20" fill="none" stroke="#1e3fae" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="flex justify-between mt-4">
+<span class="text-[10px] font-bold text-slate-400">JAN</span>
+<span class="text-[10px] font-bold text-slate-400">FEB</span>
+<span class="text-[10px] font-bold text-slate-400">MAR</span>
+<span class="text-[10px] font-bold text-slate-400">APR</span>
+<span class="text-[10px] font-bold text-slate-400">MAY</span>
+<span class="text-[10px] font-bold text-slate-400">JUN</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Table: Most Reordered Items -->
+<div class="card overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+<h3 class="font-bold text-lg">Most Reordered Items</h3>
+<button class="text-primary text-sm font-semibold hover:underline">View All Items</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-900 text-slate-500 uppercase text-[10px] font-bold tracking-wider">
+<tr>
+<th class="px-6 py-4">Item Details</th>
+<th class="px-6 py-4">Category</th>
+<th class="px-6 py-4 text-right">Reorder Frequency</th>
+<th class="px-6 py-4 text-center">Trend</th>
+<th class="px-6 py-4 text-right">Stock Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">soap</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Luxury Body Wash (250ml)</p>
+<p class="text-xs text-slate-400">SKU: TOI-442</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-bold rounded uppercase">Toiletries</span>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-medium">12 times / month</p>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<svg class="text-secondary" height="20" width="60">
+<polyline fill="none" points="0,15 10,10 20,12 30,5 40,8 50,2 60,5" stroke="currentColor" stroke-linecap="round" stroke-width="2"></polyline>
+</svg>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="text-sm font-bold text-red-500">Low Stock (45)</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">coffee</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Premium Roast Coffee Pods</p>
+<p class="text-xs text-slate-400">SKU: FDR-112</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold rounded uppercase">Drinks</span>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-medium">8 times / month</p>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<svg class="text-red-500" height="20" width="60">
+<polyline fill="none" points="0,5 15,8 30,12 45,10 60,18" stroke="currentColor" stroke-linecap="round" stroke-width="2"></polyline>
+</svg>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="text-sm font-bold text-secondary">Optimal (420)</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">bed</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Cotton Pillowcase - White</p>
+<p class="text-xs text-slate-400">SKU: LIN-008</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-[10px] font-bold rounded uppercase">Linens</span>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="text-sm font-medium">5 times / month</p>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<svg class="text-secondary" height="20" width="60">
+<polyline fill="none" points="0,18 10,15 20,16 30,10 40,8 50,5 60,2" stroke="currentColor" stroke-linecap="round" stroke-width="2"></polyline>
+</svg>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="text-sm font-bold text-secondary">Optimal (124)</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
