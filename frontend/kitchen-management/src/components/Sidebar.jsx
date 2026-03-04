@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, UtensilsCrossed, ClipboardList, PlusCircle, ShoppingCart } from 'lucide-react';
+import { Home, UtensilsCrossed, ClipboardList, PlusCircle, ShoppingCart, LogOut, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const menuItems = [
     { path: '/', icon: Home, label: 'Dashboard' },
@@ -18,6 +20,18 @@ const Sidebar = () => {
       <div className="sidebar-header">
         <img src="/Hotel_Logo.png" alt="Hotel Logo" className="hotel-logo" />
       </div>
+
+      {user && (
+        <div className="user-info">
+          <div className="user-avatar">
+            <User size={24} />
+          </div>
+          <div className="user-details">
+            <p className="user-name">{user.fullName}</p>
+            <p className="user-role">{user.role}</p>
+          </div>
+        </div>
+      )}
       
       <nav className="sidebar-nav">
         <div className="nav-section">
@@ -36,6 +50,10 @@ const Sidebar = () => {
       </nav>
 
       <div className="sidebar-footer">
+        <button className="logout-btn" onClick={logout}>
+          <LogOut size={18} />
+          <span>Logout</span>
+        </button>
         <p className="footer-text">© 2026 ආලකමන්දා Hotel</p>
         <p className="footer-subtext">Kitchen Management System</p>
       </div>
