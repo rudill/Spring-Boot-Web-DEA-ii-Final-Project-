@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { saveGuest, saveReservation } from '../services/api';
+import { saveGuest, saveReservation, findGuestByNic } from '../services/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import HotelLogo from "../assets/Hotel_Logo.png";
 
@@ -26,6 +26,8 @@ const CreateReservationPage = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [existingGuestId, setExistingGuestId] = useState(null);
     const [message, setMessage] = useState({ type: '', text: '' });
 
     // Calculate stay duration and costs
@@ -54,6 +56,45 @@ const CreateReservationPage = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Reset existing guest status if personal info (not stay details) changed manually
+        const guestFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'nic'];
+        if (existingGuestId && guestFields.includes(name)) {
+            setExistingGuestId(null);
+        }
+    };
+
+    const handleVerifyNic = async () => {
+        if (!formData.nic) {
+            setMessage({ type: 'error', text: 'Please enter a NIC number to verify.' });
+            return;
+        }
+
+        setIsVerifying(true);
+        setMessage({ type: '', text: '' });
+
+        try {
+            const response = await findGuestByNic(formData.nic);
+            if (response.data) {
+                const guestData = response.data;
+                setFormData(prev => ({
+                    ...prev,
+                    firstName: guestData.firstName,
+                    lastName: guestData.lastName,
+                    email: guestData.email,
+                    phoneNumber: guestData.phoneNumber || guestData.phone,
+                }));
+                setExistingGuestId(guestData.guestId);
+                setMessage({ type: 'success', text: 'Existing guest found! Details auto-filled.' });
+            } else {
+                setMessage({ type: 'info', text: 'No existing guest found with this NIC. Please fill in the details for a new registration.' });
+            }
+        } catch (error) {
+            console.error('Error verifying NIC:', error);
+            setMessage({ type: 'error', text: 'Verification failed. Please enter details manually.' });
+        } finally {
+            setIsVerifying(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -67,16 +108,19 @@ const CreateReservationPage = () => {
         setMessage({ type: '', text: '' });
 
         try {
-            // 1. Save Guest
-            const guestResponse = await saveGuest({
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                phoneNumber: formData.phoneNumber,
-                nic: formData.nic,
-                email: formData.email,
-            });
+            let guestId = existingGuestId;
 
-            const guestId = guestResponse.data.guestId;
+            // 1. Save Guest only if it's a new registration
+            if (!guestId) {
+                const guestResponse = await saveGuest({
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    phoneNumber: formData.phoneNumber,
+                    nic: formData.nic,
+                    email: formData.email,
+                });
+                guestId = guestResponse.data.guestId;
+            }
 
             // 2. Save Reservation
             await saveReservation({
@@ -154,29 +198,58 @@ const CreateReservationPage = () => {
                                 </div>
                                 <div className="p-6 space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="flex flex-col gap-2">
+                                            <span className="text-text-primary text-sm font-semibold">NIC Number</span>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    name="nic"
+                                                    value={formData.nic}
+                                                    onChange={handleChange}
+                                                    className={`form-input flex-1 ${existingGuestId ? 'bg-green-50 border-green-200' : ''}`}
+                                                    placeholder="19902345676V"
+                                                    type="text"
+                                                    required
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={handleVerifyNic}
+                                                    disabled={isVerifying || !formData.nic}
+                                                    className="px-4 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800 disabled:opacity-50 transition-colors flex items-center gap-2"
+                                                >
+                                                    {isVerifying ? (
+                                                        <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                                                    ) : (
+                                                        <span className="material-symbols-outlined text-sm">verified</span>
+                                                    )}
+                                                    Verify
+                                                </button>
+                                            </div>
+                                            {existingGuestId && (
+                                                <span className="text-xs text-green-600 font-bold flex items-center gap-1">
+                                                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                                                    Registered Guest Found
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <label className="flex flex-col gap-2">
                                             <span className="text-text-primary text-sm font-semibold">First Name</span>
-                                            <input name="firstName" value={formData.firstName} onChange={handleChange} className="form-input" placeholder="Sarah" type="text" required />
+                                            <input name="firstName" value={formData.firstName} onChange={handleChange} className={`form-input ${existingGuestId ? 'bg-slate-50 opacity-80' : ''}`} placeholder="Sarah" type="text" required readOnly={!!existingGuestId} />
                                         </label>
                                         <label className="flex flex-col gap-2">
                                             <span className="text-text-primary text-sm font-semibold">Last Name</span>
-                                            <input name="lastName" value={formData.lastName} onChange={handleChange} className="form-input" placeholder="Jenkins" type="text" required />
+                                            <input name="lastName" value={formData.lastName} onChange={handleChange} className={`form-input ${existingGuestId ? 'bg-slate-50 opacity-80' : ''}`} placeholder="Jenkins" type="text" required readOnly={!!existingGuestId} />
                                         </label>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <label className="flex flex-col gap-2">
                                             <span className="text-text-primary text-sm font-semibold">Email Address</span>
-                                            <input name="email" value={formData.email} onChange={handleChange} className="form-input" placeholder="sarah.j@example.com" type="email" required />
+                                            <input name="email" value={formData.email} onChange={handleChange} className={`form-input ${existingGuestId ? 'bg-slate-50 opacity-80' : ''}`} placeholder="sarah.j@example.com" type="email" required readOnly={!!existingGuestId} />
                                         </label>
                                         <label className="flex flex-col gap-2">
                                             <span className="text-text-primary text-sm font-semibold">Phone Number</span>
-                                            <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} className="form-input" placeholder="0767396678" type="tel" required />
-                                        </label>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <label className="flex flex-col gap-2">
-                                            <span className="text-text-primary text-sm font-semibold">NIC Number</span>
-                                            <input name="nic" value={formData.nic} onChange={handleChange} className="form-input" placeholder="19902345676V" type="text" required />
+                                            <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} className={`form-input ${existingGuestId ? 'bg-slate-50 opacity-80' : ''}`} placeholder="0767396678" type="tel" required readOnly={!!existingGuestId} />
                                         </label>
                                     </div>
                                 </div>
@@ -264,6 +337,9 @@ const CreateReservationPage = () => {
                     </form>
                 </div>
             </main>
+            <footer className="mt-auto py-6 px-10 border-t border-slate-200 text-center">
+                <p className="text-sm text-slate-500">© {new Date().getFullYear()} Hotel Management Systems. All rights reserved.</p>
+            </footer>
         </div>
     );
 };
