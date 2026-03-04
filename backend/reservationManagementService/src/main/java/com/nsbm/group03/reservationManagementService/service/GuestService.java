@@ -46,6 +46,12 @@ public class GuestService {
         return modelMapper.map(guest, GuestDTO.class);
     }
 
+    public GuestDTO findGuestById(Long id) {
+        Guest guest = guestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Guest not found"));
+        return modelMapper.map(guest, GuestDTO.class);
+    }
+
     public boolean deleteGuest(GuestDTO guestDTO) {
         guestRepository.delete(modelMapper.map(guestDTO, Guest.class));
         return true;
