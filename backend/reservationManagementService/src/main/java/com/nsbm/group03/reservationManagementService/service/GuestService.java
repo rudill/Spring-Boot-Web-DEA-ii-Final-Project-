@@ -19,35 +19,41 @@ public class GuestService {
     private GuestRepository guestRepository;
 
     @Autowired
-    private ModelMapper modelMapper ;
+    private ModelMapper modelMapper;
 
-    public GuestDTO saveGuest(GuestDTO guestDTO){
-
-        guestRepository.save(modelMapper.map(guestDTO, Guest.class));
-        return guestDTO;
+    public GuestDTO saveGuest(GuestDTO guestDTO) {
+        Guest guest = guestRepository.save(modelMapper.map(guestDTO, Guest.class));
+        return modelMapper.map(guest, GuestDTO.class);
 
     }
 
-    public List<GuestDTO> findAllGuests(){
+    public List<GuestDTO> findAllGuests() {
         List<Guest> guestList = guestRepository.findAll();
-        return modelMapper.map(guestList,new TypeToken<List<GuestDTO>>(){}.getType());
+        return modelMapper.map(guestList, new TypeToken<List<GuestDTO>>() {
+        }.getType());
     }
 
-    public GuestDTO updateGuest(GuestDTO guestDTO){
-        if(!guestRepository.existsById(guestDTO.getGuestId())){
+    public GuestDTO updateGuest(GuestDTO guestDTO) {
+        if (!guestRepository.existsById(guestDTO.getGuestId())) {
             throw new RuntimeException("Guest not found");
         }
-        guestRepository.save(modelMapper.map(guestDTO,Guest.class));
+        guestRepository.save(modelMapper.map(guestDTO, Guest.class));
         return guestDTO;
     }
 
-    public GuestDTO findGuestByPhoneNumber(String phoneNumber){
-        Guest guest= guestRepository.findByPhoneNumber(phoneNumber);
-        return modelMapper.map(guest,GuestDTO.class);
+    public GuestDTO findGuestByPhoneNumber(String phoneNumber) {
+        Guest guest = guestRepository.findByPhoneNumber(phoneNumber);
+        return modelMapper.map(guest, GuestDTO.class);
     }
 
-    public boolean deleteGuest(GuestDTO guestDTO){
-        guestRepository.delete(modelMapper.map(guestDTO,Guest.class));
+    public GuestDTO findGuestById(Long id) {
+        Guest guest = guestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Guest not found"));
+        return modelMapper.map(guest, GuestDTO.class);
+    }
+
+    public boolean deleteGuest(GuestDTO guestDTO) {
+        guestRepository.delete(modelMapper.map(guestDTO, Guest.class));
         return true;
     }
 

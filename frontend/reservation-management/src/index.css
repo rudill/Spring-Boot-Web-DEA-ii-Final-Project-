@@ -14,6 +14,11 @@
   --color-text-secondary: #64748b;
   --color-border: #e2e8f0;
 
+  /* Status Colors */
+  --color-status-green: #10b981;
+  --color-status-red: #ef4444;
+  --color-status-yellow: #f59e0b;
+
   --font-display: Inter, sans-serif;
 
   --radius-default: 0.5rem;

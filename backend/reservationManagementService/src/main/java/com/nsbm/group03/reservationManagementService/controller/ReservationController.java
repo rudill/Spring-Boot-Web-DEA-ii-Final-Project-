@@ -30,6 +30,11 @@ public class ReservationController {
         return reservationService.getReservationsByGuest(guestId);
     }
 
+    @PatchMapping("/{id}/status")
+    public ReservationDTO updateStatus(@PathVariable Long id, @RequestParam String status) {
+        return reservationService.updateStatus(id, status);
+    }
+
     @DeleteMapping("/{id}")
     public boolean delete(@PathVariable Long id) {
         return reservationService.deleteReservation(id);
