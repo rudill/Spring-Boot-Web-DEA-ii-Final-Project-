@@ -2,8 +2,8 @@ import axios from 'axios';
 
 // Event Management Service API URL
 const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/api/events'  // Production proxy
-  : 'http://localhost:8087/api/events';
+  ? 'http://Event-management-service-env.eba-qrma82w3.us-east-1.elasticbeanstalk.com/api/events'  // AWS Production
+  : 'http://Event-management-service-env.eba-qrma82w3.us-east-1.elasticbeanstalk.com/api/events';  // Using AWS for development too
 
 const api = axios.create({
   baseURL: API_BASE_URL,

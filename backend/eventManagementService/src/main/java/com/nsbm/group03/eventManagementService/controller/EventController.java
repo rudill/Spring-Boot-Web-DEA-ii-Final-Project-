@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:5173", "http://localhost:5174" }) // CORS for React
+@CrossOrigin(origins = "*") // Allow all origins for AWS deployment
 public class EventController {
 
     private final EventService service;
