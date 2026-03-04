@@ -4,7 +4,8 @@ import '../models/inventory_item.dart';
 class InventoryService {
   final Dio _dio = Dio();
 
-  static const String _baseUrl = 'http://localhost:8087';
+  static const String _baseUrl =
+      'https://inventorymanagementservice-inventory.onrender.com';
   static const String _inventoryEndpoint = '/api/inventory';
 
   Future<List<InventoryItem>> fetchInventory() async {
