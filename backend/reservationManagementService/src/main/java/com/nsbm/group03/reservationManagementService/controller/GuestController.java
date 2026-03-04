@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping (value = "api/v1/guest")
+@RequestMapping(value = "api/v1/guest")
 @CrossOrigin(origins = "*")
 
 public class GuestController {
@@ -16,28 +16,33 @@ public class GuestController {
     @Autowired
     private GuestService guestService;
 
-    //create guest
+    // create guest
     @PostMapping("/saveguest")
     public GuestDTO saveGuest(@RequestBody GuestDTO guestDTO) {
         return guestService.saveGuest(guestDTO);
     }
 
-    //view guest
+    // view guest
     @GetMapping("/getguests")
     public List<GuestDTO> getGuests() {
         return guestService.findAllGuests();
     }
 
-    //updateguest
+    // updateguest
     @PutMapping(value = "/updateguest")
     public GuestDTO updateGuest(@RequestBody GuestDTO guestDTO) {
         return guestService.updateGuest(guestDTO);
     }
 
-    //get user by phone number
-    @GetMapping(value ="/findGuestByPhoneNumber/{phoneNumber}" )
-    public GuestDTO findGuestByPhoneNumber(@PathVariable String phoneNumber){
+    // get user by phone number
+    @GetMapping(value = "/findGuestByPhoneNumber/{phoneNumber}")
+    public GuestDTO findGuestByPhoneNumber(@PathVariable String phoneNumber) {
         return guestService.findGuestByPhoneNumber(phoneNumber);
+    }
+
+    @GetMapping("/{id}")
+    public GuestDTO getGuestById(@PathVariable Long id) {
+        return guestService.findGuestById(id);
     }
 
     @DeleteMapping("/deleteguest")
@@ -45,9 +50,5 @@ public class GuestController {
         guestService.deleteGuest(guestDTO);
         return true;
     }
-
-
-
-
 
 }

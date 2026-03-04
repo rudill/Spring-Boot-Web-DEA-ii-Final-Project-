@@ -70,31 +70,33 @@ const DashboardPage = () => {
     return (
         <div className="flex h-screen overflow-hidden bg-background">
             <main className="flex-1 flex flex-col overflow-hidden">
-                <header className="h-16 border-b border-border bg-white flex items-center justify-between px-8">
-                    <div className="flex items-center gap-8">
-                        <div className="flex items-center gap-3 text-primary cursor-pointer" onClick={() => navigate('/')}>
-                            <img src={HotelLogo} alt="Hotel Logo" className="h-10 w-auto object-contain" />
-                            <h2 className="text-slate-900 text-lg font-bold">Reservation Management</h2>
-                        </div>
-                        <nav className="flex items-center gap-6 ml-4">
-                            <button onClick={() => navigate('/')} className="text-primary text-sm font-bold border-b-2 border-primary py-5 -mb-0.5 transition-colors">Dashboard</button>
-                            <button onClick={() => navigate('/reservations')} className="text-text-secondary hover:text-primary text-sm font-medium transition-colors">Reservations</button>
-                            <button className="text-text-secondary hover:text-primary text-sm font-medium transition-colors">Guests</button>
+                <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-border bg-white px-10 py-3 sticky top-0 z-50">
+                    <div className="flex items-center gap-3 text-primary cursor-pointer" onClick={() => navigate('/')}>
+                        <img src={HotelLogo} alt="Hotel Logo" className="h-10 w-auto object-contain" />
+                        <h2 className="text-slate-900 text-lg font-bold">Reservation Management</h2>
+                    </div>
+                    <div className="flex flex-1 justify-end gap-8">
+                        <nav className="flex items-center gap-8">
+                            <button onClick={() => navigate('/')} className="text-primary text-sm font-bold border-b-2 border-primary pb-1">Dashboard</button>
+                            <button onClick={() => navigate('/reservations')} className="text-slate-600 hover:text-primary text-sm font-medium transition-colors">Reservations</button>
+                            <button onClick={() => navigate('/guests')} className="text-slate-600 hover:text-primary text-sm font-medium transition-colors">Guests</button>
                         </nav>
                     </div>
-                    <button
-                        onClick={() => navigate('/reservation')}
-                        className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-colors"
-                    >
-                        <span className="material-symbols-outlined text-sm">add</span>
-                        <span>New Booking</span>
-                    </button>
                 </header>
 
                 <div className="flex-1 overflow-y-auto p-8">
-                    <div className="mb-8">
-                        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Overview</h2>
-                        <p className="text-text-secondary mt-1">Real-time hotel status and room availability summary.</p>
+                    <div className="flex flex-wrap justify-between items-end gap-4 mb-8">
+                        <div className="flex flex-col gap-1">
+                            <h1 className="text-slate-900 text-3xl font-extrabold tracking-tight">Dashboard Overview</h1>
+                            <p className="text-slate-500 text-base">Real-time hotel status and room availability summary.</p>
+                        </div>
+                        <button
+                            onClick={() => navigate('/reservation')}
+                            className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-all shadow-md shadow-primary/20"
+                        >
+                            <span className="material-symbols-outlined text-xl">person_add</span>
+                            <span>New Booking</span>
+                        </button>
                     </div>
 
                     {/* KPI Cards */}
