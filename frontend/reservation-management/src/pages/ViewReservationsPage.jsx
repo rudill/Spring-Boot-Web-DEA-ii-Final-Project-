@@ -179,7 +179,7 @@ const ViewReservationsPage = () => {
                     </div>
 
                     <div className="flex gap-3 overflow-x-auto pb-2">
-                        {['All', 'Confirmed', 'Checked-In', 'Pending', 'Cancelled'].map(status => (
+                        {['All', 'Confirmed', 'Checked-In', 'Checked-Out', 'Cancelled'].map(status => (
                             <button
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
@@ -245,7 +245,6 @@ const ViewReservationsPage = () => {
                                                 value={res.status}
                                                 onChange={(e) => handleStatusUpdate(res.reservationId, e.target.value)}
                                             >
-                                                <option value="PENDING">Pending</option>
                                                 <option value="CONFIRMED">Confirm</option>
                                                 <option value="CHECKED-IN">Check In</option>
                                                 <option value="CHECKED-OUT">Check Out</option>

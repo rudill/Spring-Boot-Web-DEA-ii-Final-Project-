@@ -194,7 +194,7 @@ const GuestDirectoryPage = () => {
                 </div>
             </main>
             <footer className="mt-auto py-6 px-10 border-t border-slate-200 text-center">
-                <p className="text-sm text-slate-500">© {new Date().getFullYear()} LuxeStay Hotel Management Systems. All rights reserved.</p>
+                <p className="text-sm text-slate-500">© {new Date().getFullYear()} Hotel Management Systems. All rights reserved.</p>
             </footer>
         </div>
     );
