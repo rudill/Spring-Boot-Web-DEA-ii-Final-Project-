@@ -130,7 +130,7 @@ const CreateReservationPage = () => {
                 checkOutDate: formData.checkOutDate,
                 totalAmount: reservationSummary.total,
                 specialRequests: formData.specialRequests,
-                status: 'PENDING',
+                status: 'CONFIRMED',
             });
 
             setMessage({ type: 'success', text: 'Reservation confirmed successfully!' });
