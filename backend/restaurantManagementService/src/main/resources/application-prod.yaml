@@ -1,15 +1,15 @@
-# Production Configuration
+# Production Configuration (AWS RDS MySQL)
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/restaurantdb
+    url: jdbc:mysql://${AWS_RDS_ENDPOINT:hotel-project-db.cx7.us-east-1.rds.amazonaws.com}:3306/hotel_db?useSSL=true&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME:admin}
     password: ${DB_PASSWORD:password}
-  
+
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
 
   h2:
@@ -17,7 +17,7 @@ spring:
       enabled: false
 
 server:
-  port: ${PORT:8087}
+  port: ${PORT:8086}
 
 management:
   endpoints:
