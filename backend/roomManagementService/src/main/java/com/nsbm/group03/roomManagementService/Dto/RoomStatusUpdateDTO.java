@@ -13,12 +13,19 @@ public class RoomStatusUpdateDTO {
     @NotNull
     private RoomStatus status;
 
+    private String changedBy;
+
     public RoomStatusUpdateDTO() {}
 
-    public RoomStatusUpdateDTO(String roomId,String roomNumber, RoomStatus status) {
-        
+    public RoomStatusUpdateDTO(String roomNumber, RoomStatus status) {
         this.roomNumber = roomNumber;
         this.status = status;
+    }
+
+    public RoomStatusUpdateDTO(String roomNumber, RoomStatus status, String changedBy) {
+        this.roomNumber = roomNumber;
+        this.status = status;
+        this.changedBy = changedBy;
     }
 
     // Getters & Setters
@@ -28,4 +35,7 @@ public class RoomStatusUpdateDTO {
 
     public RoomStatus getStatus() { return status; }
     public void setStatus(RoomStatus status) { this.status = status; }
+
+    public String getChangedBy() { return changedBy; }
+    public void setChangedBy(String changedBy) { this.changedBy = changedBy; }
 }
