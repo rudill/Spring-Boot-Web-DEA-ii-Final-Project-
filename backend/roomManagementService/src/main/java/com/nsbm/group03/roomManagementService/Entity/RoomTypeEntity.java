@@ -22,7 +22,7 @@ public class RoomTypeEntity {
 
     private double pricePerNight;
 
-    private String imagePath; // /images/single.jpg
+    private String imagePath; 
 
     public RoomTypeEntity() {
     }

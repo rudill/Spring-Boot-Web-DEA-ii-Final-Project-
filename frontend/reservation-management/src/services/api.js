@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const reservationApi = axios.create({
-  baseURL: 'http://localhost:8081/api',
+  baseURL: 'http://52.221.207.161:8081/api',
 });
 
 const roomApi = axios.create({

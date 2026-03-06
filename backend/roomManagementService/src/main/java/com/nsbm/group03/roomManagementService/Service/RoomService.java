@@ -321,8 +321,8 @@ public class RoomService {
         if (roomTypeRepository.findByRoomType(RoomType.SINGLE) == null) {
             RoomTypeEntity singleType = new RoomTypeEntity();
             singleType.setRoomType(RoomType.SINGLE);
-            singleType.setPricePerNight(50.0);
-            singleType.setImagePath("/images/single.jpg");
+            singleType.setPricePerNight(5000.0);
+            singleType.setImagePath("/Upload/Single.jpg");
             roomTypeRepository.saveAndFlush(singleType);
         }
         
@@ -330,8 +330,8 @@ public class RoomService {
         if (roomTypeRepository.findByRoomType(RoomType.DOUBLE) == null) {
             RoomTypeEntity doubleType = new RoomTypeEntity();
             doubleType.setRoomType(RoomType.DOUBLE);
-            doubleType.setPricePerNight(80.0);
-            doubleType.setImagePath("/images/double.jpg");
+            doubleType.setPricePerNight(8000.0);
+            doubleType.setImagePath("/Upload/Double.jpg");
             roomTypeRepository.saveAndFlush(doubleType);
         }
         
@@ -339,8 +339,8 @@ public class RoomService {
         if (roomTypeRepository.findByRoomType(RoomType.DELUXE) == null) {
             RoomTypeEntity deluxeType = new RoomTypeEntity();
             deluxeType.setRoomType(RoomType.DELUXE);
-            deluxeType.setPricePerNight(120.0);
-            deluxeType.setImagePath("/images/deluxe.jpg");
+            deluxeType.setPricePerNight(12000.0);
+            deluxeType.setImagePath("/Upload/Deluxe.jpg");
             roomTypeRepository.saveAndFlush(deluxeType);
         }
     }

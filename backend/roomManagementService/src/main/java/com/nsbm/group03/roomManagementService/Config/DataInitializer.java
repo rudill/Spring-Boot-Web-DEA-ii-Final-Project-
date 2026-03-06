@@ -37,7 +37,7 @@ public class DataInitializer implements CommandLineRunner {
         RoomTypeEntity singleType = typeRepo.findByRoomType(RoomType.SINGLE);
         if (singleType == null) {
             try {
-                singleType = new RoomTypeEntity("room-type-single", RoomType.SINGLE, 50.0, "/images/single.jpg");
+                singleType = new RoomTypeEntity("room-type-single", RoomType.SINGLE, 5000.0, "/Upload/Single.jpg");
                 typeRepo.saveAndFlush(singleType);
             } catch (DataIntegrityViolationException | ObjectOptimisticLockingFailureException e) {
                 // already exists, fetch it again
@@ -49,7 +49,7 @@ public class DataInitializer implements CommandLineRunner {
         RoomTypeEntity doubleType = typeRepo.findByRoomType(RoomType.DOUBLE);
         if (doubleType == null) {
             try {
-                doubleType = new RoomTypeEntity("room-type-double", RoomType.DOUBLE, 80.0, "/images/double.jpg");
+                doubleType = new RoomTypeEntity("room-type-double", RoomType.DOUBLE, 8000.0, "/Upload/Double.jpg");
                 typeRepo.saveAndFlush(doubleType);
             } catch (DataIntegrityViolationException | ObjectOptimisticLockingFailureException e) {
                 // already exists, fetch it again
@@ -61,7 +61,7 @@ public class DataInitializer implements CommandLineRunner {
         RoomTypeEntity deluxeType = typeRepo.findByRoomType(RoomType.DELUXE);
         if (deluxeType == null) {
             try {
-                deluxeType = new RoomTypeEntity("room-type-deluxe", RoomType.DELUXE, 120.0, "/images/deluxe.jpg");
+                deluxeType = new RoomTypeEntity("room-type-deluxe", RoomType.DELUXE, 12000.0, "/Upload/Deluxe.jpg");
                 typeRepo.saveAndFlush(deluxeType);
             } catch (DataIntegrityViolationException | ObjectOptimisticLockingFailureException e) {
                 // already exists, fetch it again

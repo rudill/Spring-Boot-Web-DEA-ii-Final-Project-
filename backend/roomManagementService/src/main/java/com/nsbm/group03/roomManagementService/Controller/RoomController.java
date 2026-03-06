@@ -2,11 +2,17 @@ package com.nsbm.group03.roomManagementService.Controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -45,6 +51,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 )
 @RestController
 @RequestMapping("/api/rooms")
+@CrossOrigin(origins = "*")
 public class RoomController {
 
     @Autowired
@@ -366,13 +373,13 @@ public class RoomController {
     }
 
     @Operation(summary = "Get room type image",
-            description = "Retrieve the image path for a specific room type.")
+            description = "Retrieve the image file for a specific room type to display in the frontend.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Image path retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "Room type not found", content = @Content)
+        @ApiResponse(responseCode = "200", description = "Image retrieved successfully", content = @Content(mediaType = "image/jpeg")),
+        @ApiResponse(responseCode = "404", description = "Room type or image not found", content = @Content)
     })
     @GetMapping("/room-types/{type}/image")
-    public ResponseEntity<String> getRoomTypeImage(
+    public ResponseEntity<byte[]> getRoomTypeImage(
             @Parameter(description = "Room type (SINGLE, DOUBLE, DELUXE)", example = "SINGLE")
             @PathVariable String type) {
 
@@ -380,16 +387,48 @@ public class RoomController {
             RoomType roomType = RoomType.valueOf(type.toUpperCase());
             String imagePath = roomService.getRoomTypeImage(roomType);
 
-            if (imagePath == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Image not found for room type: " + type);
+            if (imagePath == null || imagePath.contains("not found")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
-            return ResponseEntity.ok(imagePath);
+            // Read image file from filesystem
+            Path imagefile = Paths.get(imagePath);
+            
+            // Check if file exists
+            if (!Files.exists(imagefile)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            byte[] imageBytes = Files.readAllBytes(imagefile);
+            
+            // Determine media type based on file extension
+            String contentType = getContentType(imagePath);
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(imageBytes);
+                    
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Invalid room type: " + type);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    /**
+     * Determine content type based on file extension
+     */
+    private String getContentType(String filePath) {
+        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (filePath.endsWith(".png")) {
+            return "image/png";
+        } else if (filePath.endsWith(".gif")) {
+            return "image/gif";
+        } else if (filePath.endsWith(".webp")) {
+            return "image/webp";
+        }
+        return "application/octet-stream";
     }
 
     @Operation(summary = "Get room statistics",
