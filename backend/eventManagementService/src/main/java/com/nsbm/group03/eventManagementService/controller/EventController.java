@@ -11,7 +11,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin(origins = "*") // Allow all origins for AWS deployment
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE,
+        RequestMethod.OPTIONS }) // Allow all origins and methods for AWS deployment
 public class EventController {
 
     private final EventService service;

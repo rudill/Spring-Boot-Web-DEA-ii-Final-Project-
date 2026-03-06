@@ -8,6 +8,8 @@ const VenueList = () => {
   const [venues, setVenues] = useState([]);
   const [filteredVenues, setFilteredVenues] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -20,11 +22,16 @@ const VenueList = () => {
 
   const fetchVenues = async () => {
     try {
+      setError('');
       const response = await venueService.getAllVenues();
-      setVenues(response.data);
-      setFilteredVenues(response.data);
+      const venueData = Array.isArray(response.data) ? response.data : [];
+      setVenues(venueData);
+      setFilteredVenues(venueData);
     } catch (error) {
       console.error('Error fetching venues:', error);
+      setError('Failed to load venues. Please refresh the page.');
+      setVenues([]);
+      setFilteredVenues([]);
     } finally {
       setLoading(false);
     }
@@ -35,7 +42,8 @@ const VenueList = () => {
 
     if (searchTerm) {
       filtered = filtered.filter(venue =>
-        venue.name.toLowerCase().includes(searchTerm.toLowerCase())
+        venue.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (venue.location && venue.location.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -45,10 +53,20 @@ const VenueList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this venue?')) {
       try {
+        setError('');
+        setSuccess('');
+        console.log('Deleting venue ID:', id);
         await venueService.deleteVenue(id);
-        fetchVenues();
+        setSuccess('Venue deleted successfully!');
+        // Wait a moment before refetching to ensure backend has processed
+        setTimeout(() => {
+          fetchVenues();
+          setSuccess('');
+        }, 500);
       } catch (error) {
         console.error('Error deleting venue:', error);
+        const errorMsg = error.response?.data?.message || error.message || 'Failed to delete venue. Please try again.';
+        setError(errorMsg);
       }
     }
   };
@@ -70,12 +88,24 @@ const VenueList = () => {
         </Link>
       </div>
 
+      {error && (
+        <div className="alert alert-danger" style={{ marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="alert alert-success" style={{ marginBottom: '1rem', backgroundColor: '#d4edda', color: '#155724', border: '1px solid #c3e6cb', padding: '0.75rem', borderRadius: '0.25rem' }}>
+          {success}
+        </div>
+      )}
+
       <div className="filters-section card">
         <div className="search-box">
           <Search size={20} />
           <input
             type="text"
-            placeholder="Search by venue name..."
+            placeholder="Search by venue name or location..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -89,7 +119,9 @@ const VenueList = () => {
             <tr>
               <th>ID</th>
               <th>Name</th>
+              <th>Location</th>
               <th>Capacity</th>
+              <th>Amenities</th>
               <th>Price Per Hour</th>
               <th>Actions</th>
             </tr>
@@ -98,9 +130,11 @@ const VenueList = () => {
             {filteredVenues.map((venue) => (
               <tr key={venue.id}>
                 <td>#{venue.id}</td>
-                <td className="venue-name">{venue.name}</td>
-                <td>{venue.capacity} people</td>
-                <td>Rs. {venue.pricePerHour.toLocaleString()}</td>
+                <td>{venue.name}</td>
+                <td>{venue.location || 'N/A'}</td>
+                <td>{venue.capacity || 0}</td>
+                <td>{venue.amenities || 'N/A'}</td>
+                <td>Rs. {venue.pricePerHour ? venue.pricePerHour.toLocaleString() : '0'}</td>
                 <td>
                   <div className="action-buttons">
                     <Link

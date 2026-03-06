@@ -8,6 +8,8 @@ const EventList = () => {
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
@@ -23,11 +25,16 @@ const EventList = () => {
 
   const fetchEvents = async () => {
     try {
+      setError('');
       const response = await eventService.getAllEvents();
-      setEvents(response.data);
-      setFilteredEvents(response.data);
+      const eventData = Array.isArray(response.data) ? response.data : [];
+      setEvents(eventData);
+      setFilteredEvents(eventData);
     } catch (error) {
       console.error('Error fetching events:', error);
+      setError('Failed to load events. Please refresh the page.');
+      setEvents([]);
+      setFilteredEvents([]);
     } finally {
       setLoading(false);
     }
@@ -52,10 +59,19 @@ const EventList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
+        setError('');
+        setSuccess('');
+        console.log('Deleting event ID:', id);
         await eventService.deleteEvent(id);
-        fetchEvents();
+        setSuccess('Event deleted successfully!');
+        setTimeout(() => {
+          fetchEvents();
+          setSuccess('');
+        }, 500);
       } catch (error) {
         console.error('Error deleting event:', error);
+        const errorMsg = error.response?.data?.message || error.message || 'Failed to delete event. Please try again.';
+        setError(errorMsg);
       }
     }
   };
@@ -86,6 +102,18 @@ const EventList = () => {
           Book Event
         </Link>
       </div>
+
+      {error && (
+        <div className="alert alert-danger" style={{ marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="alert alert-success" style={{ marginBottom: '1rem', backgroundColor: '#d4edda', color: '#155724', border: '1px solid #c3e6cb', padding: '0.75rem', borderRadius: '0.25rem' }}>
+          {success}
+        </div>
+      )}
 
       <div className="filters-section card">
         <div className="search-box">
@@ -131,10 +159,10 @@ const EventList = () => {
             {filteredEvents.map((event) => (
               <tr key={event.id}>
                 <td>#{event.id}</td>
-                <td className="event-name">{event.customerName}</td>
-                <td>{new Date(event.eventDate).toLocaleDateString()}</td>
-                <td>Venue #{event.venueId}</td>
-                <td>{event.attendees}</td>
+                <td className="event-name">{event.customerName || 'N/A'}</td>
+                <td>{event.eventDate ? new Date(event.eventDate).toLocaleDateString() : 'N/A'}</td>
+                <td>Venue #{event.venueId || 'N/A'}</td>
+                <td>{event.attendees || 0}</td>
                 <td>
                   <span className={getStatusBadge(event.status)}>
                     {event.status || 'PENDING'}

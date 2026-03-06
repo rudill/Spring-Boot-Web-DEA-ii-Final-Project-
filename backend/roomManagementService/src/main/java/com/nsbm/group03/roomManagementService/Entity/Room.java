@@ -11,6 +11,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.OneToMany;
 
 
 @Entity
@@ -18,19 +19,23 @@ public class Room {
 
     @Id    
     private String roomId;
-    
-    @Column(unique = true, nullable = false)
-    private String roomNumber;
-    private double pricePerNight;
-    private int capacity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RoomType roomType;
+        
+    @Column(unique = true, nullable = false)
+    private String roomNumber;
+    private double pricePerNight;
+    private int capacity;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RoomStatus status;
+    private RoomStatus status;   
+
+    // historical statuses, cascade operations ensure they follow the room lifecycle
+    @OneToMany(mappedBy = "room", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<RoomStatusHistory> statusHistory = new java.util.ArrayList<>();
 
     @PrePersist
     public void generateId() {
@@ -81,11 +86,21 @@ public class Room {
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
+
     public RoomStatus getStatus() {
         return status;
     }
+
     public void setStatus(RoomStatus status) {
         this.status = status;
+    }
+
+    public java.util.List<RoomStatusHistory> getStatusHistory() {
+        return statusHistory;
+    }
+
+    public void setStatusHistory(java.util.List<RoomStatusHistory> statusHistory) {
+        this.statusHistory = statusHistory;
     }
 
     @Override

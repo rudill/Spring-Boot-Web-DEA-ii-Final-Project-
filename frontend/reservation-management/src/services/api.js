@@ -14,9 +14,10 @@ export const saveReservation = (reservationData) => reservationApi.post('/reserv
 export const getAllReservations = () => reservationApi.get('/reservations');
 export const getReservationsByGuest = (guestId) => reservationApi.get(`/reservations/guest/${guestId}`);
 export const updateReservationStatus = (id, status) => reservationApi.patch(`/reservations/${id}/status?status=${status}`);
+export const deleteReservation = (id) => reservationApi.delete(`/reservations/${id}`);
 export const getAllGuests = () => reservationApi.get('/v1/guest/getguests');
 export const getGuestById = (id) => reservationApi.get(`/v1/guest/${id}`);
-export const findGuestByPhoneNumber = (phoneNumber) => reservationApi.get(`/v1/guest/findGuestByPhoneNumber/${phoneNumber}`);
+export const findGuestByNic = (nic) => reservationApi.get(`/v1/guest/findGuestByNic/${nic}`);
 export const updateGuest = (guestData) => reservationApi.put('/v1/guest/updateguest', guestData);
 export const deleteGuest = (guestData) => reservationApi.delete('/v1/guest/deleteguest', { data: guestData });
 

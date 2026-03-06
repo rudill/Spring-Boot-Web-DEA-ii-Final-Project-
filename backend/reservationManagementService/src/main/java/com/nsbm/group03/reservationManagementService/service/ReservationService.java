@@ -33,6 +33,9 @@ public class ReservationService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private EmailService emailService;
+
     private static final String ROOM_SERVICE_URL = "http://localhost:8082/api/rooms/updateStatus";
 
     // Save Reservation
@@ -46,6 +49,18 @@ public class ReservationService {
         reservation.setCreatedAt(LocalDateTime.now());
 
         reservationRepository.save(reservation);
+
+        // Send confirmation email
+        if (guest.getEmail() != null) {
+            emailService.sendReservationConfirmationEmail(
+                    guest.getEmail(),
+                    guest.getFirstName() + " " + guest.getLastName(),
+                    reservation.getReservationId().toString(),
+                    reservation.getCheckInDate().toString(),
+                    reservation.getCheckOutDate().toString(),
+                    reservation.getRoomId(),
+                    String.valueOf(reservation.getTotalAmount()));
+        }
 
         return modelMapper.map(reservation, ReservationDTO.class);
     }

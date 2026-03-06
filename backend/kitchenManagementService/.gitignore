@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Docker & Environment ###
+.env
+logs/
+
+### Database ###
+*.db
+*.sqlite
+*.sqlite3

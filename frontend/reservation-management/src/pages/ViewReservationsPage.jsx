@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { getAllReservations, updateReservationStatus } from '../services/api';
+import { getAllReservations, updateReservationStatus, getAllRooms, deleteReservation } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import HotelLogo from "../assets/Hotel_Logo.png";
 
@@ -19,18 +19,26 @@ const ViewReservationsPage = () => {
 
     const fetchData = async () => {
         setLoading(true);
+
+        // Fetch reservations independently
         try {
-            const [resResponse, roomsResponse] = await Promise.all([
-                getAllReservations(),
-                import('../services/api').then(m => m.getAllRooms())
-            ]);
+            const resResponse = await getAllReservations();
             setReservations(resResponse.data);
+        } catch (error) {
+            console.error('Error fetching reservations:', error);
+            // We still want to show an empty list or error message if reservations themselves fail
+        }
+
+        // Fetch rooms independently for filters
+        try {
+            const roomsResponse = await getAllRooms();
             setRooms(roomsResponse.data);
         } catch (error) {
-            console.error('Error fetching data:', error);
-        } finally {
-            setLoading(false);
+            console.error('Error fetching rooms (optional for filters):', error);
+            // It's okay if rooms fail, we just won't have room-specific filtering
         }
+
+        setLoading(false);
     };
 
     const fetchReservations = async () => {
@@ -50,6 +58,21 @@ const ViewReservationsPage = () => {
         } catch (error) {
             console.error('Error updating status:', error);
             alert('Failed to update status. Please try again.');
+        }
+    };
+
+    const handleDeleteReservation = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this reservation? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await deleteReservation(id);
+            // Refresh the list
+            fetchReservations();
+        } catch (error) {
+            console.error('Error deleting reservation:', error);
+            alert('Failed to delete reservation. Please try again.');
         }
     };
 
@@ -179,7 +202,7 @@ const ViewReservationsPage = () => {
                     </div>
 
                     <div className="flex gap-3 overflow-x-auto pb-2">
-                        {['All', 'Confirmed', 'Checked-In', 'Pending', 'Cancelled'].map(status => (
+                        {['All', 'Confirmed', 'Checked-In', 'Checked-Out', 'Cancelled'].map(status => (
                             <button
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
@@ -240,17 +263,25 @@ const ViewReservationsPage = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <select
-                                                className="text-primary bg-slate-50 border border-slate-200 rounded px-2 py-1 font-bold text-sm focus:ring-1 focus:ring-primary outline-none"
-                                                value={res.status}
-                                                onChange={(e) => handleStatusUpdate(res.reservationId, e.target.value)}
-                                            >
-                                                <option value="PENDING">Pending</option>
-                                                <option value="CONFIRMED">Confirm</option>
-                                                <option value="CHECKED-IN">Check In</option>
-                                                <option value="CHECKED-OUT">Check Out</option>
-                                                <option value="CANCELLED">Cancel</option>
-                                            </select>
+                                            <div className="flex justify-end items-center gap-2">
+                                                <select
+                                                    className="text-primary bg-slate-50 border border-slate-200 rounded px-2 py-1 font-bold text-sm focus:ring-1 focus:ring-primary outline-none"
+                                                    value={res.status}
+                                                    onChange={(e) => handleStatusUpdate(res.reservationId, e.target.value)}
+                                                >
+                                                    <option value="CONFIRMED">Confirm</option>
+                                                    <option value="CHECKED-IN">Check In</option>
+                                                    <option value="CHECKED-OUT">Check Out</option>
+                                                    <option value="CANCELLED">Cancel</option>
+                                                </select>
+                                                <button
+                                                    onClick={() => handleDeleteReservation(res.reservationId)}
+                                                    className="p-1 px-2 text-red-500 hover:bg-red-50 rounded transition-colors"
+                                                    title="Delete Reservation"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg">delete</span>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -267,6 +298,9 @@ const ViewReservationsPage = () => {
                     </div>
                 </div>
             </main>
+            <footer className="mt-auto py-6 px-10 border-t border-slate-200 text-center">
+                <p className="text-sm text-slate-500">© {new Date().getFullYear()} Hotel Management Systems. All rights reserved.</p>
+            </footer>
         </div>
     );
 };

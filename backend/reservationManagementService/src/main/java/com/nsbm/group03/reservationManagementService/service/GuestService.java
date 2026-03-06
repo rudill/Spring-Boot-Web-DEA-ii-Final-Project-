@@ -41,15 +41,15 @@ public class GuestService {
         return guestDTO;
     }
 
-    public GuestDTO findGuestByPhoneNumber(String phoneNumber) {
-        Guest guest = guestRepository.findByPhoneNumber(phoneNumber);
-        return modelMapper.map(guest, GuestDTO.class);
-    }
-
     public GuestDTO findGuestById(Long id) {
         Guest guest = guestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Guest not found"));
         return modelMapper.map(guest, GuestDTO.class);
+    }
+
+    public GuestDTO findGuestByNic(String nic) {
+        Guest guest = guestRepository.findByNic(nic);
+        return guest != null ? modelMapper.map(guest, GuestDTO.class) : null;
     }
 
     public boolean deleteGuest(GuestDTO guestDTO) {

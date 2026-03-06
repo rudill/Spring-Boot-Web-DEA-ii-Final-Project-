@@ -1,11 +1,14 @@
 package com.nsbm.group03.roomManagementService.Dto;
 
+
 import com.nsbm.group03.roomManagementService.Enum.RoomType;
 
 public class RoomAvailabilityDTO {
     private String roomNumber;
     private RoomType roomType;
     private double pricePerNight;
+    
+    
 
     public RoomAvailabilityDTO() {}
 

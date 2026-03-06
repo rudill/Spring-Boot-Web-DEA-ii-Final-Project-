@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getGuestById, getReservationsByGuest, updateGuest, deleteGuest } from '../services/api';
+import { getGuestById, getReservationsByGuest, updateGuest, deleteGuest, deleteReservation } from '../services/api';
 import HotelLogo from "../assets/Hotel_Logo.png";
 const GuestProfilePage = () => {
     const { id } = useParams();
@@ -101,6 +101,22 @@ const GuestProfilePage = () => {
                 console.error("Error deleting guest:", error);
                 showNotification('Failed to delete guest. Please try again.', 'error');
                 setIsDeleting(false);
+            }
+        }
+    };
+
+    const handleDeleteReservation = async (reservationId) => {
+        if (window.confirm('Are you sure you want to delete this reservation? This action cannot be undone.')) {
+            try {
+                await deleteReservation(reservationId);
+                showNotification('Reservation deleted successfully!');
+                // Refresh the reservations list
+                const resRes = await getReservationsByGuest(id);
+                const sortedRes = resRes.data.sort((a, b) => new Date(b.checkInDate) - new Date(a.checkInDate));
+                setReservations(sortedRes);
+            } catch (error) {
+                console.error("Error deleting reservation:", error);
+                showNotification('Failed to delete reservation. Please try again.', 'error');
             }
         }
     };
@@ -268,6 +284,7 @@ const GuestProfilePage = () => {
                                                     <th className="px-6 py-3">Room</th>
                                                     <th className="px-6 py-3">Amount</th>
                                                     <th className="px-6 py-3">Status</th>
+                                                    <th className="px-6 py-3 text-right">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-slate-100">
@@ -289,6 +306,15 @@ const GuestProfilePage = () => {
                                                             <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${getStatusStyle(res.status)}`}>
                                                                 {res.status}
                                                             </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right">
+                                                            <button
+                                                                onClick={() => handleDeleteReservation(res.reservationId)}
+                                                                className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                                title="Delete Reservation"
+                                                            >
+                                                                <span className="material-symbols-outlined text-lg">delete</span>
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 ))}

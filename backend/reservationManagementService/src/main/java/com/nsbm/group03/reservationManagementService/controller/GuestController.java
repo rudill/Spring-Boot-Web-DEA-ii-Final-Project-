@@ -34,15 +34,14 @@ public class GuestController {
         return guestService.updateGuest(guestDTO);
     }
 
-    // get user by phone number
-    @GetMapping(value = "/findGuestByPhoneNumber/{phoneNumber}")
-    public GuestDTO findGuestByPhoneNumber(@PathVariable String phoneNumber) {
-        return guestService.findGuestByPhoneNumber(phoneNumber);
-    }
-
     @GetMapping("/{id}")
     public GuestDTO getGuestById(@PathVariable Long id) {
         return guestService.findGuestById(id);
+    }
+
+    @GetMapping("/findGuestByNic/{nic}")
+    public GuestDTO findGuestByNic(@PathVariable String nic) {
+        return guestService.findGuestByNic(nic);
     }
 
     @DeleteMapping("/deleteguest")
