@@ -44,7 +44,8 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Center(
         child: SingleChildScrollView(
           child: Container(
-            width: 400,
+            constraints: const BoxConstraints(maxWidth: 400),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),

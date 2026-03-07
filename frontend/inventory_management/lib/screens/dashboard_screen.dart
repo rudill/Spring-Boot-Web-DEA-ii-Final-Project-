@@ -60,29 +60,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 850;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Row(
-        children: [
-          _buildSidebar(),
-          Expanded(
-            child: _selectedIndex == 1
+      appBar: isMobile
+          ? AppBar(
+              backgroundColor: AppColors.primary,
+              title: const Text(
+                'Inventory Management',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              iconTheme: const IconThemeData(color: Colors.white),
+            )
+          : null,
+      drawer: isMobile ? Drawer(child: _buildSidebar()) : null,
+      body: isMobile
+          ? (_selectedIndex == 1
                 ? ReportsScreen(items: _items)
-                : _buildInventoryContent(),
-          ),
-        ],
-      ),
+                : _buildInventoryContent())
+          : Row(
+              children: [
+                _buildSidebar(),
+                Expanded(
+                  child: _selectedIndex == 1
+                      ? ReportsScreen(items: _items)
+                      : _buildInventoryContent(),
+                ),
+              ],
+            ),
     );
   }
 
   Widget _buildInventoryContent() {
+    final isMobile = MediaQuery.of(context).size.width < 850;
     return Column(
       children: [
         _buildHeader(), // The new top area (Title + Add Button + Search)
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32.0,
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 16.0 : 32.0,
               vertical: 16.0,
             ),
             child: Column(
@@ -269,67 +287,127 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildHeader() {
+    final isMobile = MediaQuery.of(context).size.width < 850;
     return Container(
-      padding: const EdgeInsets.only(left: 32, right: 32, top: 32, bottom: 16),
+      padding: EdgeInsets.only(
+        left: isMobile ? 16 : 32,
+        right: isMobile ? 16 : 32,
+        top: isMobile ? 16 : 32,
+        bottom: 16,
+      ),
       color: AppColors.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Top Row: Title + Add Button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Inventory Directory",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "$_totalItemsCount items found",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-              ElevatedButton.icon(
-                onPressed: () => _showAddEditItemDialog(),
-                icon: const Icon(
-                  Icons.add_box_outlined,
-                  size: 20,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  "Add Item",
+          if (isMobile)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Inventory Directory",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "$_totalItemsCount items found",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _showAddEditItemDialog(),
+                    icon: const Icon(
+                      Icons.add_box_outlined,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      "Add Item",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          else
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Inventory Directory",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "$_totalItemsCount items found",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => _showAddEditItemDialog(),
+                  icon: const Icon(
+                    Icons.add_box_outlined,
+                    size: 20,
                     color: Colors.white,
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
+                  label: const Text(
+                    "Add Item",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
                   ),
-                  elevation: 0,
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           const SizedBox(height: 24),
           // Search Bar Row
           Container(
@@ -382,6 +460,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildStatsGrid() {
+    final isMobile = MediaQuery.of(context).size.width < 850;
+    if (isMobile) {
+      return Column(
+        children: [
+          _buildStatCard(
+            "Total Available Stock",
+            _totalItemsCount.toString(),
+            Icons.inventory_2,
+            AppColors.primary,
+          ),
+          const SizedBox(height: 16),
+          _buildStatCard(
+            "Low Stock Items",
+            _lowStockCount.toString(),
+            Icons.warning_amber_rounded,
+            Colors.orange,
+          ),
+        ],
+      );
+    }
+
     return Row(
       children: [
         Expanded(
@@ -486,7 +585,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     const Text(
                       "Inventory Items",
@@ -496,7 +598,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(width: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -518,7 +619,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ],
                 ),
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     TextButton.icon(
                       onPressed: () {
@@ -537,7 +640,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(color: AppColors.textSecondary),
                       ),
                     ),
-                    const SizedBox(width: 8),
                     TextButton.icon(
                       onPressed: () {
                         setState(() {
@@ -963,7 +1065,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     OutlinedButton(
                       onPressed: null,
@@ -975,7 +1079,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       child: const Text("Previous"),
                     ),
-                    const SizedBox(width: 8),
                     OutlinedButton(
                       onPressed: () {},
                       style: OutlinedButton.styleFrom(

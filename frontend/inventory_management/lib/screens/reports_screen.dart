@@ -8,21 +8,23 @@ class ReportsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 850;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F8),
       body: Column(
         children: [
-          _buildHeader(),
+          _buildHeader(isMobile),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(32.0),
+              padding: EdgeInsets.all(isMobile ? 16.0 : 32.0),
               child: Column(
                 children: [
-                  _buildStatsRow(),
+                  _buildStatsRow(isMobile),
                   const SizedBox(height: 24),
                   _buildVisualizationsRow(),
                   const SizedBox(height: 24),
-                  _buildReorderedItemsTable(),
+                  _buildReorderedItemsTable(isMobile),
                 ],
               ),
             ),
@@ -32,98 +34,205 @@ class ReportsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isMobile) {
     return Container(
-      height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 16 : 32,
+        vertical: 12,
+      ),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.8),
         border: const Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            "Inventory Performance Reports",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.5,
-              color: Color(0xFF0F172A),
+      child: isMobile
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Inventory Performance Reports",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: "Search reports...",
+                          hintStyle: const TextStyle(
+                            color: Color(0xFF94A3B8),
+                            fontSize: 14,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Color(0xFF94A3B8),
+                            size: 20,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.download_for_offline, size: 18),
+                      label: const Text("Generate Report"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E3FAE),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 0,
+                        ),
+                        minimumSize: const Size(0, 40),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.notifications_none,
+                          color: Color(0xFF64748B),
+                        ),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Inventory Performance Reports",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Container(
+                      width: 256,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: "Search reports...",
+                          hintStyle: const TextStyle(
+                            color: Color(0xFF94A3B8),
+                            fontSize: 14,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Color(0xFF94A3B8),
+                            size: 20,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.download_for_offline, size: 18),
+                      label: const Text("Generate Report"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E3FAE),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 0,
+                        ),
+                        minimumSize: const Size(0, 40),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.notifications_none,
+                          color: Color(0xFF64748B),
+                        ),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-          Row(
-            children: [
-              Container(
-                width: 256,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Search reports...",
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF94A3B8),
-                      fontSize: 14,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: Color(0xFF94A3B8),
-                      size: 20,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.download_for_offline, size: 18),
-                label: const Text("Generate Report"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E3FAE),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 0,
-                  ),
-                  minimumSize: const Size(0, 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  elevation: 2,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.notifications_none,
-                    color: Color(0xFF64748B),
-                  ),
-                  onPressed: () {},
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
   int get _totalItems => items.fold(0, (sum, item) => sum + item.quantity);
   int get _lowStockItems => items.where((i) => i.isLowStock).length;
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(bool isMobile) {
+    if (isMobile) {
+      return Column(
+        children: [
+          _buildStatCard(
+            "Total Items in Stock",
+            "$_totalItems",
+            "",
+            true,
+            "Sum of all current inventory quantities",
+          ),
+          const SizedBox(height: 16),
+          _buildStatCard(
+            "Low Stock Items",
+            "$_lowStockItems",
+            "",
+            false,
+            "Items below restock threshold",
+          ),
+        ],
+      );
+    }
     return Row(
       children: [
         Expanded(
@@ -372,7 +481,7 @@ class ReportsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildReorderedItemsTable() {
+  Widget _buildReorderedItemsTable(bool isMobile) {
     // Sort items by lowest stock first
     var sortedItems = List<InventoryItem>.from(items)
       ..sort((a, b) => a.quantity.compareTo(b.quantity));
@@ -381,17 +490,20 @@ class ReportsScreen extends StatelessWidget {
     var top5NeedsRestock = sortedItems.take(5).toList();
 
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 const Text(
                   "Items Needing Restock",
@@ -416,60 +528,63 @@ class ReportsScreen extends StatelessWidget {
             ),
           ),
           const Divider(height: 1, color: Color(0xFFF1F5F9)),
-          DataTable(
-            headingRowColor: WidgetStateProperty.all(const Color(0xFFF8FAFC)),
-            horizontalMargin: 24,
-            columnSpacing: 24,
-            dataRowMaxHeight: 72,
-            dataRowMinHeight: 72,
-            columns: const [
-              DataColumn(
-                label: Text(
-                  "ITEM DETAILS",
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF64748B),
-                    letterSpacing: 0.5,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              headingRowColor: WidgetStateProperty.all(const Color(0xFFF8FAFC)),
+              horizontalMargin: isMobile ? 12 : 24,
+              columnSpacing: isMobile ? 12 : 24,
+              dataRowMaxHeight: 72,
+              dataRowMinHeight: 72,
+              columns: const [
+                DataColumn(
+                  label: Text(
+                    "ITEM DETAILS",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF64748B),
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
-              ),
-              DataColumn(
-                label: Text(
-                  "CATEGORY",
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF64748B),
-                    letterSpacing: 0.5,
+                DataColumn(
+                  label: Text(
+                    "CATEGORY",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF64748B),
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
-              ),
-              DataColumn(
-                label: Text(
-                  "STOCK STATUS",
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF64748B),
-                    letterSpacing: 0.5,
+                DataColumn(
+                  label: Text(
+                    "STOCK STATUS",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF64748B),
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
-              ),
-            ],
-            rows: top5NeedsRestock.map((item) {
-              return _buildTableRow(
-                item.name,
-                "ITM-${item.id.toString().padLeft(3, '0')}",
-                Icons.inventory_2_outlined,
-                item.category,
-                Colors.blue,
-                item.isLowStock
-                    ? "Low Stock (${item.quantity})"
-                    : "Optimal (${item.quantity})",
-                item.isLowStock ? Colors.red : const Color(0xFF10B981),
-              );
-            }).toList(),
+              ],
+              rows: top5NeedsRestock.map((item) {
+                return _buildTableRow(
+                  item.name,
+                  "ITM-${item.id.toString().padLeft(3, '0')}",
+                  Icons.inventory_2_outlined,
+                  item.category,
+                  Colors.blue,
+                  item.isLowStock
+                      ? "Low (${item.quantity})"
+                      : "Optimal (${item.quantity})",
+                  item.isLowStock ? Colors.red : const Color(0xFF10B981),
+                );
+              }).toList(),
+            ),
           ),
         ],
       ),
